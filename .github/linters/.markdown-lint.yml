@@ -1,0 +1,17 @@
+###########################
+## Markdown Linter rules ##
+###########################
+
+MD004:
+  style: dash
+
+MD026: false
+
+MD029:
+  style: one
+
+MD033: false
+
+MD034: false
+
+MD036: false

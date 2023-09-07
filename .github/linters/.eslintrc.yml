@@ -1,0 +1,76 @@
+#############################
+## JavaScript Linter rules ##
+#############################
+
+parser: '@typescript-eslint/parser'
+
+env:
+  node: true
+  es6: true
+  jest: true
+  commonjs: true
+
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+
+ignorePatterns:
+  - '!.*'
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/coverage/**'
+  - '**/.github/**'
+  - '**/.vscode/**'
+
+parserOptions:
+  ecmaVersion: 2023
+  sourceType: module
+  project:
+    - './.github/linters/tsconfig.json'
+    - './tsconfig.json'
+
+plugins:
+  - 'jest'
+  - '@typescript-eslint'
+
+extends:
+  - eslint:recommended
+  - plugin:@typescript-eslint/eslint-recommended
+  - plugin:@typescript-eslint/recommended
+  - plugin:github/recommended
+  - plugin:jest/recommended
+
+rules:
+  {
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
+    'camelcase': 'off',
+    'i18n-text/no-en': 'off',
+    'import/no-commonjs': 'off',
+    'import/no-namespace': 'off',
+    'no-console': 'off',
+    'prettier/prettier': 'error'
+  }
+
+overrides:
+  - files:
+      - '*.json'
+    extends:
+      - plugin:jsonc/recommended-with-json
+    parser: jsonc-eslint-parser
+    parserOptions:
+      jsonSyntax: JSON
+  - files:
+      - '*.jsonc'
+    extends:
+      - plugin:jsonc/recommended-with-jsonc
+    parser: jsonc-eslint-parser
+    parserOptions:
+      jsonSyntax: JSONC
+  - files:
+      - '*.json5'
+    extends:
+      - plugin:jsonc/recommended-with-json5
+    parser: jsonc-eslint-parser
+    parserOptions:
+      jsonSyntax: JSON5

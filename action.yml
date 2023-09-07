@@ -1,0 +1,26 @@
+name: IssueOps Parser
+description: Convert issue form responses to JSON
+author: Nick Alteen
+
+branding:
+  icon: check-square
+  color: blue
+
+inputs:
+  body:
+    description:
+      The issue body to parse. Defaults to the body from the workflow event.
+    required: true
+    default: ${{ github.event.issue.body }}
+  csv_to_list:
+    description: Convert single-line responses with comments to lists.
+    required: true
+    default: 'true'
+
+outputs:
+  json:
+    description: The parsed issue as a JSON string
+
+runs:
+  using: node16
+  main: dist/index.js

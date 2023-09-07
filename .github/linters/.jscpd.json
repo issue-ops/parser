@@ -1,0 +1,12 @@
+{
+  "threshold": 0,
+  "reporters": ["consoleFull"],
+  "ignore": [
+    "**/__snapshots__/**",
+    "**/*.yml",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/node_modules/**"
+  ],
+  "absolute": true
+}
