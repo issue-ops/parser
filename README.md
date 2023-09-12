@@ -1,9 +1,9 @@
 # IssueOps Parser
 
-[![Check dist/](https://github.com/ncalteen/issueops-parser/actions/workflows/check-dist.yml/badge.svg)](https://github.com/ncalteen/issueops-parser/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/ncalteen/issueops-parser/actions/workflows/codeql.yml/badge.svg)](https://github.com/ncalteen/issueops-parser/actions/workflows/codeql.yml)
-[![Continuous Integration](https://github.com/ncalteen/issueops-parser/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/ncalteen/issueops-parser/actions/workflows/continuous-integration.yml)
-[![Super Linter](https://github.com/ncalteen/issueops-parser/actions/workflows/super-linter.yml/badge.svg)](https://github.com/ncalteen/issueops-parser/actions/workflows/super-linter.yml)
+[![Check dist/](https://github.com/issue-ops/parser/actions/workflows/check-dist.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/check-dist.yml)
+[![CodeQL](https://github.com/issue-ops/parser/actions/workflows/codeql.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/codeql.yml)
+[![Continuous Integration](https://github.com/issue-ops/parser/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/continuous-integration.yml)
+[![Super Linter](https://github.com/issue-ops/parser/actions/workflows/super-linter.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/super-linter.yml)
 [![Code Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
 Convert issue form responses to JSON
@@ -30,14 +30,14 @@ to replace `vX.X.X` with the latest version of this action.
 ```yaml
 steps:
   - name: Parse Issue
-    id: parse-issue
-    uses: ncalteen/issueops-parser@vX.X.X
+    id: parser
+    uses: issue-ops/parser@vX.X.X
     with:
       body: ${{ github.event.issue.body }}
 
   - name: Output Issue JSON
     id: output-issue
-    run: echo ${{ steps.issue-parser.outputs.json }}
+    run: echo ${{ steps.parser.outputs.json }}
 ```
 
 ## Inputs

@@ -1,15 +1,15 @@
 {
-  "name": "issueops-parser",
+  "name": "parser",
   "description": "Convert issue form responses to JSON",
   "version": "1.0.0",
-  "author": "Nick Alteen <ncalteen@github.com>",
-  "homepage": "https://github.com/ncalteen/issueops-parser#readme",
+  "author": "Nick Alteen <issue-ops@github.com>",
+  "homepage": "https://github.com/issue-ops/parser#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ncalteen/issueops-parser.git"
+    "url": "git+https://github.com/issue-ops/parser.git"
   },
   "bugs": {
-    "url": "https://github.com/ncalteen/issueops-parser/issues"
+    "url": "https://github.com/issue-ops/parser/issues"
   },
   "keywords": [
     "github",
