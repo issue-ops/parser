@@ -1,5 +1,5 @@
 {
-  "your_contact_details": "me@me.com",
+  "your_contact_details": "[me@me.com](mailto:me@me.com)",
   "what_happened": "A bug happened!",
   "version": "1.0.0",
   "what_browsers_are_you_seeing_the_problem_on": [
@@ -8,6 +8,6 @@
   ],
   "code_of_conduct": {
     "selected": ["Never give up"],
-    "unselected": ["Hot Dog is a Sandwich"]
+    "unselected": ["Never surrender"]
   }
 }
