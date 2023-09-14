@@ -42,10 +42,10 @@ steps:
 
 ## Inputs
 
-| Input         | Default                          | Description                                          |
-| ------------- | -------------------------------- | ---------------------------------------------------- |
-| `body`        | `${{ github.event.issue.body }}` | The issue body to parse                              |
-| `csv_to_list` | `true`                           | Convert single-line responses with comments to lists |
+| Input         | Description                                                 |
+| ------------- | ----------------------------------------------------------- |
+| `body`        | The issue body to parse (`${{ github.event.issue.body }}`)  |
+| `csv_to_list` | Convert single-line responses with commas to lists (`true`) |
 
 ## Outputs
 
