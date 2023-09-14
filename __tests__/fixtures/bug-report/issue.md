@@ -1,6 +1,6 @@
 ### Your contact details
 
-me@me.com
+[me@me.com](mailto:me@me.com)
 
 ### What happened?
 
@@ -17,4 +17,4 @@ Chrome, Safari
 ### Code of Conduct
 
 - [x] Never give up
-- [ ] Hot Dog is a Sandwich
+- [ ] Never surrender

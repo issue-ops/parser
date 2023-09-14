@@ -14,7 +14,7 @@ This action is designed to be used in conjunction with
 [issue forms](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository#creating-issue-forms)
 to allow you to parse created issues into machine-readable JSON for processing.
 
-Issues submitted using issue forms use a structured markdown format. **So long
+Issues submitted using issue forms use a structured Markdown format. **So long
 as the issue body is not heavily modified by the user,** we can reliably parse
 the issue body into a JSON object.
 
