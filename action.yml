@@ -1,4 +1,4 @@
-name: IssueOps Parser
+name: IssueOps Form Parser
 description: Convert issue form responses to JSON
 author: Nick Alteen
 
