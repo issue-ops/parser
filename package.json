@@ -17,7 +17,10 @@
     "issueops"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./dist/index.js"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
@@ -31,7 +34,6 @@
     "all": "npm run format:write && npm run lint && npm run test && npm run package"
   },
   "license": "MIT",
-  "main": "index.js",
   "jest": {
     "clearMocks": true,
     "collectCoverage": true,
