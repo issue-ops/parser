@@ -1,0 +1,45 @@
+name: Continuous Delivery
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+# This is required to be able to update tags and create releases
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Release Version
+    runs-on: ubuntu-latest
+
+    # Only run this job if the PR was merged
+    if: ${{ github.event.pull_request.merged == true }}
+
+    steps:
+      # Checkout the repository with fetch-tags set to true
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
+
+      # Get the version and update the tags to use in the release
+      - name: Tag
+        id: tag
+        uses: issue-ops/semver@v0.1.0
+        with:
+          manifest-path: package.json
+          workspace: ${{ github.workspace }}
+          ref: main
+
+      # Use the version output from the previous step for the release
+      # Prepend a 'v' to the beginning (e.g. 'v1.2.3')
+      - name: Create Release
+        id: release
+        uses: issue-ops/releaser@v0.1.0
+        with:
+          tag: v${{ steps.tag.outputs.version }}
