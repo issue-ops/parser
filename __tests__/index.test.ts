@@ -1,62 +1,16 @@
 /**
- * Unit tests for the action's index.ts file.
+ * Unit tests for the action's entrypoint, src/index.ts
  */
 
-import * as core from '@actions/core'
-import fs from 'fs'
+import * as main from '../src/main'
 
-const getInputMock = jest.spyOn(core, 'getInput')
-const setOutputMock = jest.spyOn(core, 'setOutput')
+// Mock the action's entrypoint
+const runMock = jest.spyOn(main, 'run').mockImplementation()
 
 describe('index', () => {
-  beforeEach(() => {
-    jest.clearAllMocks()
-  })
+  it('calls run when imported', async () => {
+    require('../src/index')
 
-  it('retrieves the inputs', async () => {
-    getInputMock.mockImplementation((name: string) => {
-      switch (name) {
-        case 'body':
-          return fs.readFileSync(
-            '__tests__/fixtures/bug-report/issue.md',
-            'utf8'
-          )
-        case 'csv_to_list':
-          return 'true'
-        default:
-          return ''
-      }
-    })
-
-    const { run } = require('../src/index')
-    await run()
-
-    expect(getInputMock).toHaveBeenCalledWith('body', { required: true })
-    expect(getInputMock).toHaveBeenCalledWith('csv_to_list')
-  })
-
-  it('returns the parsed body as JSON', async () => {
-    getInputMock.mockImplementation((name: string) => {
-      switch (name) {
-        case 'body':
-          return fs.readFileSync(
-            '__tests__/fixtures/bug-report/issue.md',
-            'utf8'
-          )
-        case 'csv_to_list':
-          return 'true'
-        default:
-          return ''
-      }
-    })
-
-    const expected = JSON.parse(
-      fs.readFileSync('__tests__/fixtures/bug-report/expected.json', 'utf8')
-    )
-
-    const { run } = require('../src/index')
-    await run()
-
-    expect(setOutputMock).toHaveBeenCalledWith('json', JSON.stringify(expected))
+    expect(runMock).toHaveBeenCalled()
   })
 })

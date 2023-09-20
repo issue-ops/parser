@@ -1,7 +1,7 @@
 {
   "name": "parser",
   "description": "Convert issue form responses to JSON",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Nick Alteen <ncalteen@github.com>",
   "homepage": "https://github.com/issue-ops/parser#readme",
   "repository": {
@@ -17,7 +17,10 @@
     "issueops"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./dist/index.js"
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
@@ -31,7 +34,6 @@
     "all": "npm run format:write && npm run lint && npm run test && npm run package"
   },
   "license": "MIT",
-  "main": "index.js",
   "jest": {
     "clearMocks": true,
     "collectCoverage": true,
