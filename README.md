@@ -92,9 +92,7 @@ _No response_
 
 This is a description.
 
-It has multiple lines.
-
-It's pretty cool!
+It has lines.
 
 ### The Notes About the Thing
 
@@ -142,7 +140,7 @@ The output of this action would be:
   "the_shape_of_the_thing": ["square"],
   "the_sounds_of_the_thing": ["re", "mi"],
   "the_topics_about_the_thing": [],
-  "the_description_of_the_thing": "This is a description.\n\nIt has multiple lines.\n\nIt's pretty cool!",
+  "the_description_of_the_thing": "This is a description.\n\nIt has lines.",
   "the_notes_about_the_thing": "- Note\n- Another note\n- Lots of notes",
   "the_code_of_the_thing": "const thing = new Thing()\n\nthing.doThing()",
   "the_string_method_of_the_code_of_the_thing": "thing.toString()",
