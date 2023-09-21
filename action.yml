@@ -12,10 +12,15 @@ inputs:
       The issue body to parse. Defaults to the body from the workflow event.
     required: true
     default: ${{ github.event.issue.body }}
-  csv_to_list:
-    description: Convert single-line responses with comments to lists.
+  issue-form-template:
+    description: The issue form template file name (e.g. `new-repository.yml`)
     required: true
-    default: 'true'
+  workspace:
+    default: ${{ github.workspace }}
+    description:
+      The path where the repository has been cloned using the `actions/checkout`
+      step. This is required to find the issue form template file.
+    required: true
 
 outputs:
   json:

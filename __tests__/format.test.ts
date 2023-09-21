@@ -36,32 +36,44 @@ describe('formatKey', () => {
 })
 
 describe('formatValue', () => {
+  it('handles invalid types', async () => {
+    expect(
+      formatValue('ABCDEF', {
+        type: 'invalid',
+        required: true
+      } as any)
+    ).toBe(null)
+  })
+
   it('handles empty strings', async () => {
-    expect(formatValue('')).toBe(null)
+    expect(
+      formatValue('', {
+        type: 'input',
+        required: true
+      })
+    ).toBe('')
   })
 
   it('handles None', async () => {
-    expect(formatValue('None')).toBe(null)
+    expect(
+      formatValue('None', {
+        type: 'dropdown',
+        required: true,
+        multiple: false,
+        options: ['a', 'b', 'c']
+      })
+    ).toStrictEqual([])
   })
 
   it('handles _No response_', async () => {
-    expect(formatValue('_No response_')).toBe(null)
-  })
-
-  it('handles single-line CSV', async () => {
-    expect(formatValue('a,b,c')).toStrictEqual(['a', 'b', 'c'])
-    expect(formatValue('a, b, c')).toStrictEqual(['a', 'b', 'c'])
-    expect(formatValue(' a , b , c ')).toStrictEqual(['a', 'b', 'c'])
-    expect(formatValue('a,,b,c')).toStrictEqual(['a', '', 'b', 'c'])
-    expect(formatValue('a, ,b,c')).toStrictEqual(['a', '', 'b', 'c'])
-  })
-
-  it('handles single-line CSV with csvToList=false', async () => {
-    expect(formatValue('a,b,c', false)).toBe('a,b,c')
-    expect(formatValue('a, b, c', false)).toBe('a, b, c')
-    expect(formatValue(' a , b , c ', false)).toBe('a , b , c')
-    expect(formatValue('a,,b,c', false)).toBe('a,,b,c')
-    expect(formatValue('a, ,b,c', false)).toBe('a, ,b,c')
+    expect(
+      formatValue('_No response_', {
+        type: 'dropdown',
+        required: true,
+        multiple: false,
+        options: ['a', 'b', 'c']
+      })
+    ).toStrictEqual([])
   })
 
   it('handles checkboxes', async () => {
@@ -76,7 +88,38 @@ describe('formatValue', () => {
       unselected: ['a', 'c', 'e']
     }
 
-    expect(formatValue(value)).toStrictEqual(expected)
+    expect(
+      formatValue(value, {
+        type: 'checkboxes',
+        required: true,
+        options: [
+          { label: 'a', required: false },
+          { label: 'b', required: false },
+          { label: 'c', required: false }
+        ]
+      })
+    ).toStrictEqual(expected)
+  })
+
+  it('handles no checkboxes', async () => {
+    const value = ''
+
+    const expected: Checkboxes = {
+      selected: [],
+      unselected: []
+    }
+
+    expect(
+      formatValue(value, {
+        type: 'checkboxes',
+        required: true,
+        options: [
+          { label: 'a', required: false },
+          { label: 'b', required: false },
+          { label: 'c', required: false }
+        ]
+      })
+    ).toStrictEqual(expected)
   })
 
   it('handles multiline strings', async () => {
@@ -84,16 +127,11 @@ describe('formatValue', () => {
 b
 c`
 
-    expect(formatValue(value)).toBe(value)
-  })
-
-  it('handles multiline strings with checkboxes', async () => {
-    const value = `- [ ] a
-- [x] b
-- [ ] c
-d
-e`
-
-    expect(formatValue(value)).toBe(value)
+    expect(
+      formatValue(value, {
+        type: 'textarea',
+        required: true
+      })
+    ).toBe(value)
   })
 })

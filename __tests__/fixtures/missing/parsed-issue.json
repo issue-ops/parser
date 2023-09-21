@@ -1,6 +1,6 @@
 {
   "model_description": "who's molecule is this? (we don't know)",
-  "ersilia_id": null,
+  "ersilia_id": [],
   "publication": "The following link is just an example:\n\n`www.example.com`",
-  "code": null
+  "code": []
 }

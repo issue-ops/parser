@@ -1,0 +1,21 @@
+{
+  "model_name": { "type": "input", "required": true },
+  "model_description": { "type": "input", "required": false },
+  "ersilia_id": {
+    "type": "dropdown",
+    "required": true,
+    "multiple": false,
+    "options": ["abc123", "def456"]
+  },
+  "publication": {
+    "type": "textarea",
+    "required": false
+  },
+  "code": {
+    "type": "dropdown",
+    "required": true,
+    "multiple": false,
+    "options": ["123abc", "456def"]
+  },
+  "license": { "type": "input", "required": true }
+}

@@ -1,0 +1,3 @@
+{
+  "the_name_of_the_thing": { "type": "input", "required": true }
+}
