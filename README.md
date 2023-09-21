@@ -43,10 +43,14 @@ steps:
 
 ## Inputs
 
-| Input         | Description                                                 |
-| ------------- | ----------------------------------------------------------- |
-| `body`        | The issue body to parse (`${{ github.event.issue.body }}`)  |
-| `csv_to_list` | Convert single-line responses with commas to lists (`true`) |
+| Input                 | Description                               |
+| --------------------- | ----------------------------------------- |
+| `body`                | The issue body to parse                   |
+|                       | Default: `${{ github.event.issue.body }}` |
+| `issue-form-template` | The issue form template file              |
+|                       | e.g. `example.yml`                        |
+| `workspace`           | The checkout path on the runner           |
+|                       | Default: `${{ github.workspace }}`        |
 
 ## Outputs
 
@@ -56,43 +60,102 @@ steps:
 
 ## Example
 
-Given the following issue body:
+Given an [example issue template](./__tests__/fixtures/example/template.yml) and
+the following issue submitted with that template:
 
 ```markdown
-### Your contact details
+### The Name of the Thing
 
-me@me.com
+this-thing
 
-### What happened?
+### The Nickname of the Thing
 
-A bug happened!
+thing
 
-### Version
+### The Color of the Thing
 
-1.0.0
+blue
 
-### What browsers are you seeing the problem on?
+### The Shape of the Thing
 
-Chrome, Safari
+square
 
-### What else?
+### The Sounds of the Thing
 
-- [x] Never give up
-- [ ] Hot Dog is a Sandwich
+re, mi
+
+### The Topics About the Thing
+
+_No response_
+
+### The Description of the Thing
+
+This is a description.
+
+It has multiple lines.
+
+It's pretty cool!
+
+### The Notes About the Thing
+
+- Note
+- Another note
+- Lots of notes
+
+### The Code of the Thing
+
+const thing = new Thing()
+
+thing.doThing()
+
+### The String Method of the Code of the Thing
+
+thing.toString()
+
+### Is the Thing a Thing?
+
+- [x] Yes
+- [x] No
+
+### Is the Thing Useful?
+
+- [ ] Yes
+- [x] Sometimes
+- [ ] No
+
+### Read Team
+
+IssueOps-Demo-Readers
+
+### Write Team
+
+IssueOps-Demo-Writers-NotATeam
 ```
 
 The output of this action would be:
 
 ```json
 {
-  "your_contact_details": "me@me.com",
-  "what_happened": "A bug happened!",
-  "version": "1.0.0",
-  "what_browsers_are_you_seeing_the_problem_on": ["Chrome", "Safari"],
-  "code_of_conduct": {
-    "selected": ["Never give up"],
-    "unselected": ["Hot Dog is a Sandwich"]
-  }
+  "the_name_of_the_thing": "this-thing",
+  "the_nickname_of_the_thing": "thing",
+  "the_color_of_the_thing": ["blue"],
+  "the_shape_of_the_thing": ["square"],
+  "the_sounds_of_the_thing": ["re", "mi"],
+  "the_topics_about_the_thing": [],
+  "the_description_of_the_thing": "This is a description.\n\nIt has multiple lines.\n\nIt's pretty cool!",
+  "the_notes_about_the_thing": "- Note\n- Another note\n- Lots of notes",
+  "the_code_of_the_thing": "const thing = new Thing()\n\nthing.doThing()",
+  "the_string_method_of_the_code_of_the_thing": "thing.toString()",
+  "is_the_thing_a_thing": {
+    "selected": ["Yes"],
+    "unselected": ["No"]
+  },
+  "is_the_thing_useful": {
+    "selected": ["Sometimes"],
+    "unselected": ["Yes", "No"]
+  },
+  "read_team": "IssueOps-Demo-Readers",
+  "write_team": "IssueOps-Demo-Writers"
 }
 ```
 
@@ -104,54 +167,42 @@ The following transformations will take place for each heading:
 
 <!--markdownlint-disable-->
 
-| Transformation     | Before                      | After                  |
-| ------------------ | --------------------------- | ---------------------- |
-| Trim               | `### This is  a title! :) ` | `This is  a title! :)` |
-| Lowercase          | `This is  a title! :)`      | `this is  a title! :)` |
-| Replace Spaces     | `this is  a title! :)`      | `this_is__a_title!_:)` |
-| Remove Symbols     | `this_is_a_title!_:)`       | `this_is__a_title_`    |
-| Dedupe Underscores | `this_is__a_title_`         | `this_is_a_title`      |
+| Transformation   | Before                      | After                  |
+| ---------------- | --------------------------- | ---------------------- |
+| Trim             | `### This is  a title! :) ` | `This is  a title! :)` |
+| Lowercase        | `This is  a title! :)`      | `this is  a title! :)` |
+| Replace Spaces   | `this is  a title! :)`      | `this_is__a_title!_:)` |
+| Remove Symbols   | `this_is_a_title!_:)`       | `this_is__a_title_`    |
+| Trim Underscores | `this_is__a_title_`         | `this_is_a_title`      |
 
 <!--markdownlint-enable-->
 
 ### Values
 
 The following transformations will take place for responses, depending on the
-type/format.
+input type. The type is inferred from the issue form template. For information
+on each specific type, see
+[Syntax for GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema).
 
 #### Single Line
 
+[Type: `input`](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#input)
+
 Before:
 
 ```plain
 This is a response
 ```
 
-After:
+After (no change):
 
 ```plain
 This is a response
-```
-
-#### Single Line with Commas
-
-> [!NOTE]
->
-> This can be disable by setting the `csv_to_list` parameter to `'false'`.
-
-Before:
-
-```plain
-These, are, options
-```
-
-After:
-
-```json
-["These", "are", "options"]
 ```
 
 ### Multiline
+
+[Type: `textarea`](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#textarea)
 
 > [!NOTE]
 >
@@ -171,7 +222,25 @@ After:
 First line :D\n\nThird line!
 ```
 
+### Dropdown Selections
+
+[Type: `dropdown`](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#dropdown)
+
+Before:
+
+```plain
+red, blue, green
+```
+
+After:
+
+```json
+["red", "blue", "green"]
+```
+
 ### Checkboxes
+
+[Type: `checkboxes`](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema#checkboxes)
 
 Before:
 
@@ -202,3 +271,30 @@ In the following situations, an input will be omitted from the output JSON:
 |                 | `<empty>`               |
 |                 | `### This is another`   |
 |                 | `This is a value`       |
+
+If a form is submitted with empty field(s), they will be included in the issue
+body as one of the following:
+
+```markdown
+### Field A
+
+_No response_
+
+### Field B
+
+None
+
+### Field C
+
+<empty>
+```
+
+These will be converted to one of the following, based on the type of input
+specified in the issue form template:
+
+| Type         | Output                                                   |
+| ------------ | -------------------------------------------------------- |
+| `input`      | Empty string (`""`)                                      |
+| `textarea`   | Empty string (`""`)                                      |
+| `dropdown`   | Empty list (`[]`)                                        |
+| `checkboxes` | Empty checkboxes (`{ "selected": [], "unselected": []}`) |

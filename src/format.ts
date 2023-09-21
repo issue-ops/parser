@@ -1,4 +1,4 @@
-import { Checkboxes } from './interfaces'
+import { Checkboxes, FormattedField } from './interfaces'
 
 /**
  * Formats a input name to a snake case string
@@ -23,7 +23,7 @@ export function formatKey(name: string): string {
  */
 export function formatValue(
   input: string,
-  csvToList = true
+  template: FormattedField
 ): string | string[] | Checkboxes | null {
   // Remove any whitespace
   // Remove any carriage returns
@@ -33,43 +33,47 @@ export function formatValue(
     .replace(/\r/g, '')
     .replace(/^[\n]+|[\n]+$/g, '')
 
-  // Check for empty response
-  if (value === 'None' || value === '_No response_' || value === '') {
-    return null
-  }
-
-  // Check for single-line CSV
-  if (
-    csvToList &&
-    value.includes('\n') === false &&
-    value.includes(',') === true
-  ) {
-    return value.split(',').map((item) => item.trim())
-  }
-
-  // Check for non-checkbox lines
-  // If found, return as a multiline string
-  for (const line of value.split('\n')) {
-    if (
-      line.startsWith('- [ ] ') === false &&
-      line.startsWith('- [x] ') === false
-    ) {
-      return value
+  // Parse input field types
+  switch (template.type) {
+    case 'input':
+    case 'textarea': {
+      // Return empty string if no response was provided
+      // Otherwise, return the formatted response
+      return value === 'None' || value === '_No response_' || value === ''
+        ? ''
+        : value
     }
-  }
+    case 'dropdown': {
+      // Return empty list if no response was provided
+      // Otherwise, split by commas and return the list
+      return value === 'None' || value === '_No response_' || value === ''
+        ? []
+        : value.split(/, */)
+    }
+    case 'checkboxes': {
+      const checkboxes: Checkboxes = {
+        selected: [],
+        unselected: []
+      }
 
-  // At this point, we know that the value is a checkbox list
-  const checkboxes: Checkboxes = {
-    selected: [],
-    unselected: []
-  }
+      // Return empty object if no response was provided
+      if (value === 'None' || value === '_No response_' || value === '')
+        return checkboxes
 
-  for (let line of value.split('\n')) {
-    line = line.trim()
-    line.startsWith('- [x] ')
-      ? checkboxes.selected.push(line.replace('- [x] ', ''))
-      : checkboxes.unselected.push(line.replace('- [ ] ', ''))
-  }
+      // Split response by newlines
+      // Add checked items to selected
+      // Add unchecked items to unselected
+      for (let line of value.split('\n')) {
+        line = line.trim()
+        line.startsWith('- [x] ')
+          ? checkboxes.selected.push(line.replace('- [x] ', ''))
+          : checkboxes.unselected.push(line.replace('- [ ] ', ''))
+      }
 
-  return checkboxes
+      return checkboxes
+    }
+    default:
+      // Ignore anything else
+      return null
+  }
 }

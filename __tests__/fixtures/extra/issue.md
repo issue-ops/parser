@@ -1,16 +1,14 @@
 ### Model Name
 
-My cool molecule!
-
 ### Model Description
 
-This is a prediction for a super cool molecule.
+who's molecule is this? (we don't know)
 
 ### Ersilia ID
 
-eos11aa
+None
 
-### Publication
+### This is an extra field
 
 The following link is just an example:
 
@@ -18,8 +16,6 @@ The following link is just an example:
 
 ### Code
 
-_No response_
+None
 
 ### License
-
-_No response_

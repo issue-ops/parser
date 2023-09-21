@@ -1,0 +1,4 @@
+{
+  "this_isnt_a_good_issue": { "type": "input", "required": true },
+  "empty_header": { "type": "input", "required": false }
+}
