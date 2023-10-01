@@ -40,6 +40,6 @@ jobs:
       # Prepend a 'v' to the beginning (e.g. 'v1.2.3')
       - name: Create Release
         id: release
-        uses: issue-ops/releaser@v0.1.0
+        uses: issue-ops/releaser@v0.1.2
         with:
           tag: v${{ steps.tag.outputs.version }}
