@@ -44,3 +44,11 @@ jobs:
       - name: Test
         id: test
         run: npm run ci-test
+
+      - name: Report Tests
+        id: report
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Report
+          path: reports/jest-*.xml
+          reporter: jest-junit
