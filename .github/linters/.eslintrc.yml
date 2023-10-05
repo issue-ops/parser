@@ -28,6 +28,8 @@ parserOptions:
   project:
     - './.github/linters/tsconfig.json'
     - './tsconfig.json'
+  extraFileExtensions:
+    - '.json'
 
 plugins:
   - 'jest'
