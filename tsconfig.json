@@ -1,19 +1,33 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
+    /* Language and Environment */
     "target": "ES2022",
-    "module": "nodenext",
-    "rootDir": "./src",
-    "moduleResolution": "nodenext",
+
+    /* Modules */
     "baseUrl": "./",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "./src",
+
+    /* JavaScript Support */
+
+    /* Emit */
     "sourceMap": true,
     "outDir": "./dist",
-    "noImplicitAny": true,
+
+    /* Interop Constraints */
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+
+    /* Type Checking */
     "strict": true,
-    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": false,
     "newLine": "lf"
+
+    /* Completeness */
   },
   "exclude": ["./dist", "./node_modules", "./__tests__", "./coverage"]
 }
