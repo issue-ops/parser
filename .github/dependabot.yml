@@ -9,6 +9,8 @@ updates:
       - dependabot
       - actions
     open-pull-requests-limit: 10
+    reviewers:
+      - issue-ops/maintainers
 
   - package-ecosystem: npm
     directory: /
@@ -18,3 +20,5 @@ updates:
       - dependabot
       - npm
     open-pull-requests-limit: 10
+    reviewers:
+      - issue-ops/maintainers
