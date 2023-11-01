@@ -7,11 +7,13 @@ import * as core from '@actions/core'
 import { parseIssue } from '../src/parse'
 import * as format from '../src/format'
 
-jest.spyOn(core, 'info').mockImplementation()
-jest.spyOn(core, 'setFailed').mockImplementation()
-jest.spyOn(core, 'setOutput').mockImplementation()
-
 describe('parseIssue', () => {
+  beforeEach(() => {
+    jest.spyOn(core, 'info').mockImplementation()
+    jest.spyOn(core, 'setFailed').mockImplementation()
+    jest.spyOn(core, 'setOutput').mockImplementation()
+  })
+
   it('should parse a blank issue', async () => {
     const issue = fs.readFileSync('__tests__/fixtures/blank/issue.md', 'utf8')
     const template = JSON.parse(
