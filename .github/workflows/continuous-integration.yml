@@ -8,16 +8,15 @@ on:
     branches:
       - main
 
+permissions:
+  actions: read
+  checks: write
+  contents: read
+
 jobs:
   continuous-integration:
     name: Continuous Integration
     runs-on: ubuntu-latest
-
-    permissions:
-      actions: read
-      checks: write
-      contents: read
-      statuses: write
 
     steps:
       - name: Checkout
@@ -28,7 +27,7 @@ jobs:
         id: setup-node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
           cache: npm
 
       - name: Install Dependencies
