@@ -19,13 +19,13 @@ const template = fs.readFileSync(
 describe('index', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
-  })
 
-  it('retrieves the inputs', async () => {
-    // Mock the core functions
     jest.spyOn(core, 'info').mockImplementation()
     jest.spyOn(core, 'setFailed').mockImplementation()
     jest.spyOn(core, 'setOutput').mockImplementation()
+  })
+
+  it('retrieves the inputs', async () => {
     jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
       switch (name) {
         case 'body':
@@ -59,9 +59,6 @@ describe('index', () => {
 
   it('returns the parsed body', async () => {
     // Mock the core functions
-    jest.spyOn(core, 'info').mockImplementation()
-    jest.spyOn(core, 'setFailed').mockImplementation()
-    jest.spyOn(core, 'setOutput').mockImplementation()
     jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
       switch (name) {
         case 'body':
@@ -91,9 +88,6 @@ describe('index', () => {
 
   it('fails if a template is missing', async () => {
     // Mock the core functions
-    jest.spyOn(core, 'info').mockImplementation()
-    jest.spyOn(core, 'setFailed').mockImplementation()
-    jest.spyOn(core, 'setOutput').mockImplementation()
     jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
       switch (name) {
         case 'body':

@@ -5,9 +5,15 @@
 import * as main from '../src/main'
 
 // Mock the action's entrypoint
-const runMock = jest.spyOn(main, 'run').mockImplementation()
+let runMock: jest.SpyInstance
 
 describe('index', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+
+    runMock = jest.spyOn(main, 'run').mockImplementation()
+  })
+
   it('calls run when imported', async () => {
     require('../src/index')
 
