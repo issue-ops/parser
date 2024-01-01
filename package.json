@@ -1,7 +1,7 @@
 {
   "name": "parser",
   "description": "Convert issue form responses to JSON",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": "Nick Alteen <ncalteen@github.com>",
   "homepage": "https://github.com/issue-ops/parser#readme",
   "repository": {
