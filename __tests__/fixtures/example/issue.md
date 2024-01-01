@@ -53,7 +53,7 @@ thing.toString()
 ### Is the Thing Useful?
 
 - [ ] Yes
-- [x] Sometimes
+- [X] Sometimes
 - [ ] No
 
 ### Read Team
