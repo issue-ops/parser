@@ -2776,6 +2776,7 @@ function formatValue(input, template) {
                 : value.split(/, */);
         }
         case 'checkboxes': {
+            const checkedExp = /^-\s\[x\]\s/im;
             const checkboxes = {
                 selected: [],
                 unselected: []
@@ -2788,9 +2789,9 @@ function formatValue(input, template) {
             // Add unchecked items to unselected
             for (let line of value.split('\n')) {
                 line = line.trim();
-                line.startsWith('- [x] ')
-                    ? checkboxes.selected.push(line.replace('- [x] ', ''))
-                    : checkboxes.unselected.push(line.replace('- [ ] ', ''));
+                checkedExp.test(line)
+                    ? checkboxes.selected.push(line.replace(/-\s\[x\]\s/i, ''))
+                    : checkboxes.unselected.push(line.replace(/-\s\[\s\]\s/i, ''));
             }
             return checkboxes;
         }
