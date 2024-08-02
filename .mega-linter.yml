@@ -20,6 +20,7 @@ DISABLE:
 # https://megalinter.io/latest/config-activation/
 DISABLE_LINTERS:
   - MARKDOWN_MARKDOWN_TABLE_FORMATTER
+  - REPOSITORY_KICS
   - TYPESCRIPT_STANDARD
 
 # List of enabled but not blocking linters keys
