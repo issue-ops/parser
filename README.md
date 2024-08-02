@@ -1,13 +1,17 @@
 # IssueOps Parser
 
-[![Check dist/](https://github.com/issue-ops/parser/actions/workflows/check-dist.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/issue-ops/parser/actions/workflows/codeql.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/codeql.yml)
-[![Continuous Integration](https://github.com/issue-ops/parser/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/continuous-integration.yml)
-[![Continuous Delivery](https://github.com/issue-ops/parser/actions/workflows/continuous-delivery.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/continuous-delivery.yml)
-[![Super Linter](https://github.com/issue-ops/parser/actions/workflows/super-linter.yml/badge.svg)](https://github.com/issue-ops/parser/actions/workflows/super-linter.yml)
-[![Code Coverage](./badges/coverage.svg)](./badges/coverage.svg)
+![Check dist/](https://github.com/issue-ops/parser/actions/workflows/check-dist.yml/badge.svg)
+![Code Coverage](./badges/coverage.svg)
+![CodeQL](https://github.com/issue-ops/parser/actions/workflows/codeql.yml/badge.svg)
+![Continuous Integration](https://github.com/issue-ops/parser/actions/workflows/continuous-integration.yml/badge.svg)
+![Continuous Delivery](https://github.com/issue-ops/parser/actions/workflows/continuous-delivery.yml/badge.svg)
+![Linter](https://github.com/issue-ops/parser/actions/workflows/linter.yml/badge.svg)
 
 Convert issue form responses to JSON
+
+> [!IMPORTANT]
+>
+> As of version `v2.0.0`, this action has been converted to ESM.
 
 ## About
 
@@ -60,8 +64,8 @@ steps:
 
 ## Example
 
-Given an [example issue template](./__tests__/fixtures/example/template.yml) and
-the following issue submitted with that template:
+Given an [example issue template](./__fixtures__/example/template.yml) and the
+following issue submitted with that template:
 
 ```markdown
 ### The Name of the Thing

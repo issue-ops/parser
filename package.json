@@ -1,8 +1,9 @@
 {
   "name": "parser",
   "description": "Convert issue form responses to JSON",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": "Nick Alteen <ncalteen@github.com>",
+  "type": "module",
   "homepage": "https://github.com/issue-ops/parser#readme",
   "repository": {
     "type": "git",
@@ -24,63 +25,16 @@
   },
   "scripts": {
     "bundle": "npm run format:write && npm run package",
-    "ci-test": "jest",
-    "coverage": "make-coverage-badge --output-path ./badges/coverage.svg",
-    "format:write": "prettier --write '**/*.ts'",
-    "format:check": "prettier --check '**/*.ts'",
-    "lint": "npx eslint . -c ./.github/linters/.eslintrc.yml",
-    "package": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
-    "package:watch": "npm run package -- --watch",
-    "test": "jest",
+    "ci-test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
+    "coverage": "npx make-coverage-badge --output-path ./badges/coverage.svg",
+    "format:write": "npx prettier --write .",
+    "format:check": "npx prettier --check .",
+    "lint": "npx eslint .",
+    "package": "npx rollup --config rollup.config.ts --configPlugin @rollup/plugin-typescript",
+    "test": "NODE_OPTIONS=--experimental-vm-modules NODE_NO_WARNINGS=1 npx jest",
     "all": "npm run format:write && npm run lint && npm run test && npm run coverage && npm run package"
   },
   "license": "MIT",
-  "jest": {
-    "clearMocks": true,
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "./src/**"
-    ],
-    "coverageDirectory": "./coverage",
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/dist/"
-    ],
-    "coverageReporters": [
-      "json-summary",
-      "text",
-      "lcov"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 100,
-        "functions": 100,
-        "lines": 100,
-        "statements": 100
-      }
-    },
-    "moduleFileExtensions": [
-      "js",
-      "ts"
-    ],
-    "preset": "ts-jest",
-    "reporters": [
-      "default",
-      "jest-junit"
-    ],
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/*.test.ts"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/dist/"
-    ],
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "verbose": true
-  },
   "jest-junit": {
     "outputDirectory": "reports",
     "outputName": "jest-junit.xml"
@@ -92,12 +46,15 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.1",
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.0.2",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "@vercel/ncc": "^0.38.1",
     "eslint": "^8.57.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-github": "^5.0.1",
     "eslint-plugin-jest": "^28.6.0",
     "eslint-plugin-jsonc": "^2.16.0",
@@ -108,7 +65,10 @@
     "make-coverage-badge": "^1.2.0",
     "prettier": "^3.3.3",
     "prettier-eslint": "^16.3.0",
+    "rollup": "^4.19.2",
     "ts-jest": "^29.2.4",
+    "ts-jest-resolver": "^2.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
 }

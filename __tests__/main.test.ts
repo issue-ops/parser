@@ -1,43 +1,28 @@
-/**
- * Unit tests for the action's main entrypoint
- */
-
+import { jest } from '@jest/globals'
 import fs from 'fs'
-import * as core from '@actions/core'
-import * as main from '../src/main'
+import * as core from '../__fixtures__/core.js'
+
+jest.unstable_mockModule('@actions/core', () => core)
+
+const main = await import('../src/main.js')
 
 // Get the expected data (before mocking fs)
-const issue = fs.readFileSync('__tests__/fixtures/example/issue.md', 'utf-8')
+const issue = fs.readFileSync('__fixtures__/example/issue.md', 'utf-8')
 const parsedIssue = JSON.parse(
-  fs.readFileSync('__tests__/fixtures/example/parsed-issue.json', 'utf-8')
+  fs.readFileSync('__fixtures__/example/parsed-issue.json', 'utf-8')
 )
-const template = fs.readFileSync(
-  '__tests__/fixtures/example/template.yml',
-  'utf-8'
-)
+const template = fs.readFileSync('__fixtures__/example/template.yml', 'utf-8')
 
 describe('index', () => {
   beforeEach(async () => {
-    jest.clearAllMocks()
-
-    jest.spyOn(core, 'info').mockImplementation()
-    jest.spyOn(core, 'setFailed').mockImplementation()
-    jest.spyOn(core, 'setOutput').mockImplementation()
+    jest.resetAllMocks()
   })
 
   it('retrieves the inputs', async () => {
-    jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
-      switch (name) {
-        case 'body':
-          return issue
-        case 'issue-form-template':
-          return 'example.yml'
-        case 'workspace':
-          return process.cwd()
-        default:
-          return ''
-      }
-    })
+    core.getInput
+      .mockReturnValueOnce(issue)
+      .mockReturnValueOnce('example.yml')
+      .mockReturnValueOnce(process.cwd())
 
     // Mock the fs functions
     jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
@@ -58,19 +43,10 @@ describe('index', () => {
   })
 
   it('returns the parsed body', async () => {
-    // Mock the core functions
-    jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
-      switch (name) {
-        case 'body':
-          return issue
-        case 'issue-form-template':
-          return 'example.yml'
-        case 'workspace':
-          return process.cwd()
-        default:
-          return ''
-      }
-    })
+    core.getInput
+      .mockReturnValueOnce(issue)
+      .mockReturnValueOnce('example.yml')
+      .mockReturnValueOnce(process.cwd())
 
     // Mock the fs functions
     jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
@@ -87,19 +63,10 @@ describe('index', () => {
   })
 
   it('fails if a template is missing', async () => {
-    // Mock the core functions
-    jest.spyOn(core, 'getInput').mockImplementation((name: string) => {
-      switch (name) {
-        case 'body':
-          return issue
-        case 'issue-form-template':
-          return 'example.yml'
-        case 'workspace':
-          return process.cwd()
-        default:
-          return ''
-      }
-    })
+    core.getInput
+      .mockReturnValueOnce(issue)
+      .mockReturnValueOnce('example.yml')
+      .mockReturnValueOnce(process.cwd())
 
     // Mock the fs functions
     jest.spyOn(fs, 'existsSync').mockImplementation(() => false)

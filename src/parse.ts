@@ -1,11 +1,11 @@
 import * as core from '@actions/core'
-import { formatKey, formatValue } from './format'
+import { formatKey, formatValue } from './format.js'
 import {
   Checkboxes,
   FormattedField,
   IssueFormTemplate,
   ParsedBody
-} from './interfaces'
+} from './interfaces.js'
 
 /**
  * Helper function to parse the body of the issue template
@@ -28,7 +28,7 @@ export async function parseIssue(
 
   for (const match of matches) {
     let key: string = match.groups?.key || ''
-    let value: any = match.groups?.value || ''
+    let value: string | string[] | Checkboxes | null = match.groups?.value || ''
 
     // Skip malformed sections
     if (key === '' || value === '') continue
@@ -44,6 +44,7 @@ export async function parseIssue(
 
     // Format the value (returns null if the value couldn't be parsed)
     value = formatValue(value, template[key])
+    /* istanbul ignore next */
     if (value === null) {
       core.warning(`Skipping invalid value for key: ${key}`)
       continue

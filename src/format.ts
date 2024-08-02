@@ -1,4 +1,4 @@
-import { Checkboxes, FormattedField } from './interfaces'
+import { Checkboxes, FormattedField } from './interfaces.js'
 
 /**
  * Formats a input name to a snake case string

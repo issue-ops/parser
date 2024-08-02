@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import fs from 'fs'
 import YAML from 'yaml'
-import { parseIssue, parseTemplate } from './parse'
-import { FormattedField } from './interfaces'
+import { FormattedField } from './interfaces.js'
+import { parseIssue, parseTemplate } from './parse.js'
 
 /**
  * The entrypoint for the action

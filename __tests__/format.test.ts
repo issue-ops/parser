@@ -1,11 +1,12 @@
-/**
- * Unit tests for the action's format.ts file.
- */
-
-import { formatKey, formatValue } from '../src/format'
-import { Checkboxes } from '../src/interfaces'
+import { jest } from '@jest/globals'
+import { formatKey, formatValue } from '../src/format.js'
+import { Checkboxes, FormattedField } from '../src/interfaces.js'
 
 describe('formatKey', () => {
+  beforeEach(async () => {
+    jest.resetAllMocks()
+  })
+
   it('removes non-alphanumeric characters', async () => {
     expect(formatKey('!@#$%^&*()_+')).toBe('')
   })
@@ -36,12 +37,16 @@ describe('formatKey', () => {
 })
 
 describe('formatValue', () => {
+  beforeEach(async () => {
+    jest.resetAllMocks()
+  })
+
   it('handles invalid types', async () => {
     expect(
       formatValue('ABCDEF', {
         type: 'invalid',
         required: true
-      } as any)
+      } as unknown as FormattedField)
     ).toBe(null)
   })
 
