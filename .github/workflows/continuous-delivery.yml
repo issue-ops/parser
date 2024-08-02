@@ -30,7 +30,7 @@ jobs:
 
       - name: Tag
         id: tag
-        uses: issue-ops/semver@v1
+        uses: issue-ops/semver@v2
         with:
           manifest-path: package.json
           workspace: ${{ github.workspace }}
