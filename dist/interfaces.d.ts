@@ -91,6 +91,8 @@ export interface CheckboxesField {
  * A formatted GitHub issue forms field
  */
 export interface FormattedField {
+    id?: string;
+    label: string;
     type: 'markdown' | 'textarea' | 'input' | 'dropdown' | 'checkboxes';
     required: boolean;
     multiple?: boolean;

@@ -10,4 +10,4 @@ node_modules/
 *.scss
 dist/
 coverage/
-__fixtures__/
+__fixtures__/**/*.md

@@ -2,46 +2,46 @@ import { jest } from '@jest/globals'
 import { formatKey, formatValue } from '../src/format.js'
 import { Checkboxes, FormattedField } from '../src/interfaces.js'
 
-describe('formatKey', () => {
+describe('formatKey()', () => {
   beforeEach(async () => {
     jest.resetAllMocks()
   })
 
-  it('removes non-alphanumeric characters', async () => {
+  it('Removes non-alphanumeric characters', async () => {
     expect(formatKey('!@#$%^&*()_+')).toBe('')
   })
 
-  it('converts to lowercase', async () => {
+  it('Converts to lowercase', async () => {
     expect(formatKey('ABC')).toBe('abc')
   })
 
-  it('replaces spaces with underscores', async () => {
+  it('Replaces spaces with underscores', async () => {
     expect(formatKey('a b c')).toBe('a_b_c')
   })
 
-  it('replaces multiple consecutive underscores with a single underscore', async () => {
+  it('Replaces multiple consecutive underscores with a single underscore', async () => {
     expect(formatKey('a__b__c')).toBe('a_b_c')
   })
 
-  it('removes leading and trailing underscores', async () => {
+  it('Removes leading and trailing underscores', async () => {
     expect(formatKey('_abc_')).toBe('abc')
   })
 
-  it('removes leading and trailing whitespace', async () => {
+  it('Removes leading and trailing whitespace', async () => {
     expect(formatKey(' abc ')).toBe('abc')
   })
 
-  it('handles empty strings', async () => {
+  it('Handles empty strings', async () => {
     expect(formatKey('')).toBe('')
   })
 })
 
-describe('formatValue', () => {
+describe('formatValue()', () => {
   beforeEach(async () => {
     jest.resetAllMocks()
   })
 
-  it('handles invalid types', async () => {
+  it('Handles invalid types', async () => {
     expect(
       formatValue('ABCDEF', {
         type: 'invalid',
@@ -50,18 +50,20 @@ describe('formatValue', () => {
     ).toBe(null)
   })
 
-  it('handles empty strings', async () => {
+  it('Handles empty strings', async () => {
     expect(
       formatValue('', {
+        label: 'Input Test',
         type: 'input',
         required: true
       })
     ).toBe('')
   })
 
-  it('handles None', async () => {
+  it('Handles None', async () => {
     expect(
       formatValue('None', {
+        label: 'Dropdown Test',
         type: 'dropdown',
         required: true,
         multiple: false,
@@ -70,9 +72,10 @@ describe('formatValue', () => {
     ).toStrictEqual([])
   })
 
-  it('handles _No response_', async () => {
+  it('Handles _No response_', async () => {
     expect(
       formatValue('_No response_', {
+        label: 'Dropdown Test',
         type: 'dropdown',
         required: true,
         multiple: false,
@@ -81,7 +84,7 @@ describe('formatValue', () => {
     ).toStrictEqual([])
   })
 
-  it('handles checkboxes', async () => {
+  it('Handles checkboxes', async () => {
     const value = `- [ ] a
 - [x] b
 - [ ] c
@@ -95,6 +98,7 @@ describe('formatValue', () => {
 
     expect(
       formatValue(value, {
+        label: 'Checkboxes Test',
         type: 'checkboxes',
         required: true,
         options: [
@@ -106,7 +110,7 @@ describe('formatValue', () => {
     ).toStrictEqual(expected)
   })
 
-  it('handles no checkboxes', async () => {
+  it('Handles no checkboxes', async () => {
     const value = ''
 
     const expected: Checkboxes = {
@@ -116,6 +120,7 @@ describe('formatValue', () => {
 
     expect(
       formatValue(value, {
+        label: 'Checkboxes Test',
         type: 'checkboxes',
         required: true,
         options: [
@@ -127,13 +132,14 @@ describe('formatValue', () => {
     ).toStrictEqual(expected)
   })
 
-  it('handles multiline strings', async () => {
+  it('Handles multiline strings', async () => {
     const value = `a
 b
 c`
 
     expect(
       formatValue(value, {
+        label: 'Textarea Test',
         type: 'textarea',
         required: true
       })

@@ -1,4 +1,4 @@
-import { FormattedField, IssueFormTemplate, ParsedBody } from './interfaces.js';
+import { FormattedField, ParsedBody } from './interfaces.js';
 /**
  * Helper function to parse the body of the issue template
  *
@@ -14,6 +14,6 @@ export declare function parseIssue(body: string, template: {
  * @param template The issue form template
  * @returns A dictionary of fields
  */
-export declare function parseTemplate(template: IssueFormTemplate): Promise<{
+export declare function parseTemplate(templatePath: string): Promise<{
     [key: string]: FormattedField;
 }>;

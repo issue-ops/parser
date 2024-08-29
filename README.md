@@ -9,10 +9,6 @@
 
 Convert issue form responses to JSON
 
-> [!IMPORTANT]
->
-> As of version `v2.0.0`, this action has been converted to ESM.
-
 ## About
 
 This action is designed to be used in conjunction with
