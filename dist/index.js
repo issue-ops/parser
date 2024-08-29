@@ -10059,7 +10059,7 @@ function formatKey(name) {
 /**
  * Formats a input value to an appropriate type
  */
-function formatValue(input, template) {
+function formatValue(input, field) {
     // Remove any whitespace
     // Remove any carriage returns
     // Remove any leading or trailing newlines
@@ -10068,7 +10068,7 @@ function formatValue(input, template) {
         .replace(/\r/g, '')
         .replace(/^[\n]+|[\n]+$/g, '');
     // Parse input field types
-    switch (template.type) {
+    switch (field.type) {
         case 'input':
         case 'textarea': {
             // Return empty string if no response was provided
@@ -10123,15 +10123,21 @@ async function parseIssue(body, template) {
     const regexp = /### *(?<key>.*?)\s*[\r\n]+(?<value>[\s\S]*?)(?=###|$)/g;
     const matches = body.matchAll(regexp);
     for (const match of matches) {
-        let key = match.groups?.key || '';
+        const header = match.groups?.key || '';
         let value = match.groups?.value || '';
+        let key = undefined;
         // Skip malformed sections
-        if (key === '' || value === '')
+        if (header === '' || value === '')
             continue;
-        // Format the key to camelcase
-        key = formatKey(key);
-        // Check if the key is in the template
-        if (!template[key]) {
+        // Get the key by matching the body header with the template labels.
+        for (const [k, v] of Object.entries(template)) {
+            if (v.label === header) {
+                key = k;
+                break;
+            }
+        }
+        // Skip the field if there was no matching key.
+        if (!key) {
             coreExports.warning(`Skipping key not found in template: ${key}`);
             continue;
         }
@@ -10142,8 +10148,8 @@ async function parseIssue(body, template) {
             coreExports.warning(`Skipping invalid value for key: ${key}`);
             continue;
         }
-        coreExports.info(`Formatted Key: ${key}`);
-        coreExports.info(`Formatted Value: ${typeof value === 'string' ? value : JSON.stringify(value)}`);
+        coreExports.info(`Key: ${key}`);
+        coreExports.info(`Value: ${typeof value === 'string' ? value : JSON.stringify(value)}`);
         // Add to the parsed issue body
         parsedBody[key] = value;
     }
@@ -10155,29 +10161,36 @@ async function parseIssue(body, template) {
  * @param template The issue form template
  * @returns A dictionary of fields
  */
-async function parseTemplate(template) {
+async function parseTemplate(templatePath) {
     const fields = {};
+    // Verify the template exists
+    if (!fs$1.existsSync(templatePath))
+        throw new Error(`Template not found: ${templatePath}`);
+    const template = YAML.parse(fs$1.readFileSync(templatePath, 'utf8'));
     for (const item of template.body) {
         // Skip markdown fields
         if (item.type === 'markdown')
             continue;
-        // Convert the label to snake case. This is the heading in the issue body
-        // when the form is submitted, and is used by issue-ops/parser as the key.
-        const formattedKey = formatKey(item.attributes.label);
+        // Check if the ID is present in the field attributes. If so, use it as the
+        // key. Otherwise, convert the label to snake case (this is the heading in
+        // the issue body when the form is submitted).
+        const key = item.id || formatKey(item.attributes.label);
         // Take the rest of the attributes and add them to the fields object
-        fields[formattedKey] = {
+        fields[key] = {
             type: item.type,
+            label: item.attributes.label,
             required: item.validations?.required || false
         };
         if (item.type === 'dropdown') {
             // These fields are only used by dropdowns
-            fields[formattedKey].multiple = item.attributes.multiple || false;
-            fields[formattedKey].options = item.attributes.options;
+            fields[key].multiple =
+                item.attributes.multiple || false;
+            fields[key].options = item.attributes.options;
         }
         if (item.type === 'checkboxes') {
             // Checkboxes have a different options format than dropdowns
             // Enforce false for required if not present
-            fields[formattedKey].options = item.attributes.options.map((x) => {
+            fields[key].options = item.attributes.options.map((x) => {
                 return { label: x.label, required: x.required || false };
             });
         }
@@ -10199,17 +10212,17 @@ async function run() {
     coreExports.info(`  body: ${body}`);
     coreExports.info(`  template: ${template}`);
     coreExports.info(`  workspace: ${workspace}`);
-    // Verify the template exists
-    if (fs$1.existsSync(`${workspace.replace(/\/+$/, '')}/.github/ISSUE_TEMPLATE/${template}`) === false) {
-        coreExports.setFailed(`Template not found: ${template}`);
-        return;
+    try {
+        // Read and parse the template
+        const parsedTemplate = await parseTemplate(`${workspace}/.github/ISSUE_TEMPLATE/${template}`);
+        // Parse the issue
+        const parsedIssue = await parseIssue(body, parsedTemplate);
+        coreExports.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`);
+        coreExports.setOutput('json', JSON.stringify(parsedIssue));
     }
-    // Read and parse the template
-    const parsedTemplate = await parseTemplate(YAML.parse(fs$1.readFileSync(`${workspace}/.github/ISSUE_TEMPLATE/${template}`, 'utf8')));
-    // Parse the issue
-    const parsedIssue = await parseIssue(body, parsedTemplate);
-    coreExports.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`);
-    coreExports.setOutput('json', JSON.stringify(parsedIssue));
+    catch (error) {
+        return coreExports.setFailed(error.message);
+    }
 }
 
 /* istanbul ignore next */

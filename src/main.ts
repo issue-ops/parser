@@ -1,6 +1,4 @@
 import * as core from '@actions/core'
-import fs from 'fs'
-import YAML from 'yaml'
 import { FormattedField } from './interfaces.js'
 import { parseIssue, parseTemplate } from './parse.js'
 
@@ -20,26 +18,17 @@ export async function run(): Promise<void> {
   core.info(`  template: ${template}`)
   core.info(`  workspace: ${workspace}`)
 
-  // Verify the template exists
-  if (
-    fs.existsSync(
-      `${workspace.replace(/\/+$/, '')}/.github/ISSUE_TEMPLATE/${template}`
-    ) === false
-  ) {
-    core.setFailed(`Template not found: ${template}`)
-    return
+  try {
+    // Read and parse the template
+    const parsedTemplate: { [key: string]: FormattedField } =
+      await parseTemplate(`${workspace}/.github/ISSUE_TEMPLATE/${template}`)
+
+    // Parse the issue
+    const parsedIssue = await parseIssue(body, parsedTemplate)
+
+    core.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`)
+    core.setOutput('json', JSON.stringify(parsedIssue))
+  } catch (error: any) {
+    return core.setFailed(error.message)
   }
-
-  // Read and parse the template
-  const parsedTemplate: { [key: string]: FormattedField } = await parseTemplate(
-    YAML.parse(
-      fs.readFileSync(`${workspace}/.github/ISSUE_TEMPLATE/${template}`, 'utf8')
-    )
-  )
-
-  // Parse the issue
-  const parsedIssue = await parseIssue(body, parsedTemplate)
-
-  core.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`)
-  core.setOutput('json', JSON.stringify(parsedIssue))
 }

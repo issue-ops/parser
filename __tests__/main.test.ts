@@ -2,34 +2,41 @@ import { jest } from '@jest/globals'
 import fs from 'fs'
 import * as core from '../__fixtures__/core.js'
 
-jest.unstable_mockModule('@actions/core', () => core)
+const parseIssueSpy = jest.fn()
+const parseTemplateSpy = jest.fn()
 
-const main = await import('../src/main.js')
-
-// Get the expected data (before mocking fs)
 const issue = fs.readFileSync('__fixtures__/example/issue.md', 'utf-8')
 const parsedIssue = JSON.parse(
   fs.readFileSync('__fixtures__/example/parsed-issue.json', 'utf-8')
 )
-const template = fs.readFileSync('__fixtures__/example/template.yml', 'utf-8')
+const parsedTemplate = JSON.parse(
+  fs.readFileSync('__fixtures__/example/parsed-template.json', 'utf-8')
+)
 
-describe('index', () => {
-  beforeEach(async () => {
-    jest.resetAllMocks()
-  })
+jest.unstable_mockModule('@actions/core', () => core)
+jest.unstable_mockModule('../src/parse.js', () => ({
+  parseIssue: parseIssueSpy,
+  parseTemplate: parseTemplateSpy
+}))
 
-  it('retrieves the inputs', async () => {
+const main = await import('../src/main.js')
+
+describe('main', () => {
+  beforeEach(() => {
     core.getInput
       .mockReturnValueOnce(issue)
       .mockReturnValueOnce('example.yml')
       .mockReturnValueOnce(process.cwd())
 
-    // Mock the fs functions
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
-    jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
-      return template
-    })
+    parseIssueSpy.mockReturnValue(parsedIssue)
+    parseTemplateSpy.mockReturnValue(parsedTemplate)
+  })
 
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  it('Returns the parsed body', async () => {
     await main.run()
 
     expect(core.getInput).toHaveBeenCalledWith('body', { required: true })
@@ -40,21 +47,6 @@ describe('index', () => {
     expect(core.getInput).toHaveReturnedWith('example.yml')
     expect(core.getInput).toHaveBeenCalledWith('workspace', { required: true })
     expect(core.getInput).toHaveReturnedWith(process.cwd())
-  })
-
-  it('returns the parsed body', async () => {
-    core.getInput
-      .mockReturnValueOnce(issue)
-      .mockReturnValueOnce('example.yml')
-      .mockReturnValueOnce(process.cwd())
-
-    // Mock the fs functions
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => true)
-    jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
-      return template
-    })
-
-    await main.run()
 
     expect(core.setOutput).toHaveBeenCalledWith(
       'json',
@@ -62,16 +54,9 @@ describe('index', () => {
     )
   })
 
-  it('fails if a template is missing', async () => {
-    core.getInput
-      .mockReturnValueOnce(issue)
-      .mockReturnValueOnce('example.yml')
-      .mockReturnValueOnce(process.cwd())
-
-    // Mock the fs functions
-    jest.spyOn(fs, 'existsSync').mockImplementation(() => false)
-    jest.spyOn(fs, 'readFileSync').mockImplementation(() => {
-      return template
+  it('Fails if a template is missing', async () => {
+    parseTemplateSpy.mockImplementation(() => {
+      throw new Error('Template not found: example.yml')
     })
 
     await main.run()

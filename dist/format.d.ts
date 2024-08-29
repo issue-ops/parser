@@ -12,4 +12,4 @@ export declare function formatKey(name: string): string;
 /**
  * Formats a input value to an appropriate type
  */
-export declare function formatValue(input: string, template: FormattedField): string | string[] | Checkboxes | null;
+export declare function formatValue(input: string, field: FormattedField): string | string[] | Checkboxes | null;

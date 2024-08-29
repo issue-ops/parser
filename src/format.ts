@@ -23,7 +23,7 @@ export function formatKey(name: string): string {
  */
 export function formatValue(
   input: string,
-  template: FormattedField
+  field: FormattedField
 ): string | string[] | Checkboxes | null {
   // Remove any whitespace
   // Remove any carriage returns
@@ -34,7 +34,7 @@ export function formatValue(
     .replace(/^[\n]+|[\n]+$/g, '')
 
   // Parse input field types
-  switch (template.type) {
+  switch (field.type) {
     case 'input':
     case 'textarea': {
       // Return empty string if no response was provided
