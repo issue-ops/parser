@@ -66,9 +66,9 @@ export function formatValue(
       // Add unchecked items to unselected
       for (let line of value.split('\n')) {
         line = line.trim()
-        checkedExp.test(line)
-          ? checkboxes.selected.push(line.replace(/-\s\[x\]\s/i, ''))
-          : checkboxes.unselected.push(line.replace(/-\s\[\s\]\s/i, ''))
+        if (checkedExp.test(line))
+          checkboxes.selected.push(line.replace(/-\s\[x\]\s/i, ''))
+        else checkboxes.unselected.push(line.replace(/-\s\[\s\]\s/i, ''))
       }
 
       return checkboxes
