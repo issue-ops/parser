@@ -629,7 +629,6 @@ function md5ii(a, b, c, d, x, s, t) {
 }
 
 var v3 = v35('v3', 0x30, md5);
-var v3$1 = v3;
 
 function v4(options, buf, offset) {
   options = options || {};
@@ -747,7 +746,6 @@ function sha1(bytes) {
 }
 
 var v5 = v35('v5', 0x50, sha1);
-var v5$1 = v5;
 
 var nil = '00000000-0000-0000-0000-000000000000';
 
@@ -765,9 +763,9 @@ var esmBrowser = /*#__PURE__*/Object.freeze({
 	parse: parse$1,
 	stringify: stringify$3,
 	v1: v1,
-	v3: v3$1,
+	v3: v3,
 	v4: v4,
-	v5: v5$1,
+	v5: v5,
 	validate: validate,
 	version: version
 });
