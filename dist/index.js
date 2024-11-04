@@ -11086,6 +11086,7 @@ async function run() {
         const parsedIssue = await parseIssue(body, parsedTemplate);
         coreExports.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`);
         coreExports.setOutput('json', JSON.stringify(parsedIssue));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }
     catch (error) {
         return coreExports.setFailed(error.message);

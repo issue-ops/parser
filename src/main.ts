@@ -28,6 +28,7 @@ export async function run(): Promise<void> {
 
     core.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`)
     core.setOutput('json', JSON.stringify(parsedIssue))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     return core.setFailed(error.message)
   }
