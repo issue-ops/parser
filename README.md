@@ -133,6 +133,8 @@ IssueOps-Demo-Writers-NotATeam
 
 The output of this action would be:
 
+<!-- markdownlint-disable -->
+
 ```json
 {
   "name": "this-thing",
@@ -158,6 +160,8 @@ The output of this action would be:
 }
 ```
 
+<!-- markdownlint-enable -->
+
 ### No Template Provided
 
 The `issue-form-template` input is optional. If not provided, the action will
@@ -166,6 +170,8 @@ object keys will be slugified versions of the headers, and the values will be
 the contents of the headers.
 
 Using the same example as above, the output would instead be:
+
+<!-- markdownlint-disable -->
 
 ```json
 {
@@ -185,6 +191,8 @@ Using the same example as above, the output would instead be:
   "write_team": "IssueOps-Demo-Writers"
 }
 ```
+
+<!-- markdownlint-enable -->
 
 ## Transformations
 
