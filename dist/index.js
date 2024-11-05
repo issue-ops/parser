@@ -10905,14 +10905,44 @@ var YAML = /*#__PURE__*/Object.freeze({
     visitAsync: visitAsync
 });
 
+/** Issue Form Field Types */
+var FieldType;
+(function (FieldType) {
+    /** Checkboxes Field */
+    FieldType["CHECKBOXES"] = "checkboxes";
+    /** Dropdown Field */
+    FieldType["DROPDOWN"] = "dropdown";
+    /** Input Field */
+    FieldType["INPUT"] = "input";
+    /** Markdown Field */
+    FieldType["MARKDOWN"] = "markdown";
+    /** Textarea Field */
+    FieldType["TEXTAREA"] = "textarea";
+})(FieldType || (FieldType = {}));
+/** Empty Issue Form Responses */
+var EmptyResponse;
+(function (EmptyResponse) {
+    /** No Response */
+    EmptyResponse["NO_RESPONSE"] = "_No response_";
+    /** None */
+    EmptyResponse["NONE"] = "None";
+})(EmptyResponse || (EmptyResponse = {}));
+
 /**
- * Formats a input name to a snake case string
+ * Checks if a response is empty (it is either empty or contains one of the
+ * "empty" strings used in issue form responses).
  *
- * - Removes leading and trailing whitespace
- * - Converts to lowercase
- * - Replaces spaces with underscores
- * - Replaces non-alphanumeric characters with underscores
- * - Replaces multiple consecutive underscores with a single underscore
+ * @param value Value to Check
+ */
+function isEmptyResponse(value) {
+    return (value.toLowerCase() === EmptyResponse.NONE.toLowerCase() ||
+        value.toLowerCase() === EmptyResponse.NO_RESPONSE.toLowerCase() ||
+        value === '');
+}
+/**
+ * Formats an input name to a slugified string.
+ *
+ * @param name Name to Format
  */
 function formatKey(name) {
     return name
@@ -10923,146 +10953,147 @@ function formatKey(name) {
         .replace(/_+/g, '_');
 }
 /**
- * Formats a input value to an appropriate type
+ * Formats an input value to an appropriate type
  */
 function formatValue(input, field) {
-    // Remove any whitespace
-    // Remove any carriage returns
-    // Remove any leading or trailing newlines
+    // Regex to check if a checkbox is checked.
+    const checkedExp = /^-\s\[x\]\s/im;
+    // Remove any whitespace, carriage returns, and leading/trailing newlines.
     const value = input
         .trim()
         .replace(/\r/g, '')
         .replace(/^[\n]+|[\n]+$/g, '');
-    // Parse input field types
+    if (field === undefined)
+        return value;
+    // Parse input field types.
     switch (field.type) {
-        case 'input':
-        case 'textarea': {
-            // Return empty string if no response was provided
-            // Otherwise, return the formatted response
-            return value === 'None' || value === '_No response_' || value === ''
-                ? ''
-                : value;
-        }
-        case 'dropdown': {
-            // Return empty list if no response was provided
-            // Otherwise, split by commas and return the list
-            return value === 'None' || value === '_No response_' || value === ''
-                ? []
-                : value.split(/, */);
-        }
-        case 'checkboxes': {
-            const checkedExp = /^-\s\[x\]\s/im;
+        case FieldType.INPUT:
+        case FieldType.TEXTAREA:
+            // Return empty string if no response was provided. Otherwise, return the
+            // formatted response.
+            return isEmptyResponse(value) ? undefined : value;
+        case FieldType.DROPDOWN:
+            // Return empty list if no response was provided. Otherwise, split by
+            // commas and return the list.
+            return isEmptyResponse(value) ? [] : value.split(/, */);
+        case FieldType.CHECKBOXES: {
+            // Return empty object if no response was provided. Otherwise, verify
+            // which checkboxes are checked and return the object.
             const checkboxes = {
                 selected: [],
                 unselected: []
             };
             // Return empty object if no response was provided
-            if (value === 'None' || value === '_No response_' || value === '')
+            if (isEmptyResponse(value))
                 return checkboxes;
-            // Split response by newlines
-            // Add checked items to selected
-            // Add unchecked items to unselected
+            // Split response by newlines.
             for (let line of value.split('\n')) {
                 line = line.trim();
+                // Add checked items to selected.
                 if (checkedExp.test(line))
                     checkboxes.selected.push(line.replace(/-\s\[x\]\s/i, ''));
+                // Add unchecked items to unselected.
                 else
                     checkboxes.unselected.push(line.replace(/-\s\[\s\]\s/i, ''));
             }
             return checkboxes;
         }
         default:
-            // Ignore anything else
-            return null;
+            throw new Error(`Unknown field type: ${field.type}`);
     }
 }
 
 /**
- * Helper function to parse the body of the issue template
+ * Parses an issue body (Markdown string) and returns a dictionary of the parsed
+ * fields. Uses the issue form template (optional YAML string) to match field
+ * types and labels. If the issue form template is not provided, the function
+ * will use the field header text as the key in the parsed body.
  *
- * @param body The body of the issue template
- * @param template The issue form template
- * @returns {object} A dictionary of the parsed body
+ * @param issue Issue Body (Markdown String)
+ * @param template Issue Form Template (YAML String)
+ * @param options Additional Processing Options
+ * @returns Parsed Issue Body
  */
-async function parseIssue(body, template) {
-    const parsedBody = {};
+function parseIssue(issue, template, options) {
+    const parsedTemplate = parseTemplate(template);
+    const parsedIssue = {};
     // Match the sections of the issue body
-    const regexp = /### *(?<key>.*?)\s*[\r\n]+(?<value>[\s\S]*?)(?=###|$)/g;
-    const matches = body.matchAll(regexp);
+    const regexp = /### *(?<key>.*?)\s*[\r\n]+(?<value>[\s\S]*?)(?=\n?###|\n?$)/g;
+    const matches = issue.matchAll(regexp);
     for (const match of matches) {
-        const header = match.groups?.key || '';
-        let value = match.groups?.value || '';
-        let key = undefined;
+        let value = match.groups?.value || undefined;
+        let key = match.groups?.key || '';
         // Skip malformed sections
-        if (header === '' || value === '')
+        if (key === undefined || key === '' || value === undefined || value === '')
             continue;
-        // Get the key by matching the body header with the template labels.
-        for (const [k, v] of Object.entries(template)) {
-            if (v.label === header) {
+        // If the slugify option is enabled, format the key.
+        if (options?.slugify)
+            key = formatKey(key);
+        // If the form template was provided, use the key from there instead of the
+        // heading in the issue body.
+        for (const [k, v] of Object.entries(parsedTemplate)) {
+            if (formatKey(v.label) === key || v.label === key) {
                 key = k;
                 break;
             }
         }
-        // Skip the field if there was no matching key.
-        if (!key) {
-            coreExports.warning(`Skipping key not found in template: ${key}`);
-            continue;
-        }
         // Format the value (returns null if the value couldn't be parsed)
-        value = formatValue(value, template[key]);
-        /* istanbul ignore next */
-        if (value === null) {
-            coreExports.warning(`Skipping invalid value for key: ${key}`);
-            continue;
-        }
-        coreExports.info(`Key: ${key}`);
-        coreExports.info(`Value: ${typeof value === 'string' ? value : JSON.stringify(value)}`);
+        value = formatValue(value, parsedTemplate[key]);
         // Add to the parsed issue body
-        parsedBody[key] = value;
+        parsedIssue[key] = value;
     }
     // Return the dictionary
-    return parsedBody;
+    return parsedIssue;
 }
 /**
- * Parses the issue form template and returns a dictionary of fields
- * @param template The issue form template
- * @returns A dictionary of fields
+ * Parses an issue form template and returns a dictionary of fields. The
+ * dictionary is used to match the field types and labels in the issue body. If
+ * no template is provided, an empty dictionary is returned.
+ *
+ * @param template Issue Form Template (YAML String)
+ * @returns Parsed Issue Form Template
+ * @throws Error if the template is not valid YAML
  */
-async function parseTemplate(templatePath) {
-    const fields = {};
-    // Verify the template exists
-    if (!require$$1.existsSync(templatePath))
-        throw new Error(`Template not found: ${templatePath}`);
-    const template = YAML.parse(require$$1.readFileSync(templatePath, 'utf8'));
-    for (const item of template.body) {
-        // Skip markdown fields
-        if (item.type === 'markdown')
+function parseTemplate(template) {
+    // If the template was not provided, return an empty object.
+    if (!template)
+        return {};
+    // Parse the template and confirm the type/properties are valid.
+    const fields = YAML.parse(template);
+    if (typeof fields !== 'object')
+        throw new Error('Issue template could not be parsed into an object.');
+    if (!Array.isArray(fields.body))
+        throw new Error('Issue template is missing a body array property.');
+    const parsedTemplate = {};
+    for (const item of fields.body) {
+        // Skip markdown fields.
+        if (item.type === FieldType.MARKDOWN)
             continue;
         // Check if the ID is present in the field attributes. If so, use it as the
         // key. Otherwise, convert the label to snake case (this is the heading in
         // the issue body when the form is submitted).
         const key = item.id || formatKey(item.attributes.label);
-        // Take the rest of the attributes and add them to the fields object
-        fields[key] = {
+        // Take the rest of the attributes and add them to the object
+        parsedTemplate[key] = {
             type: item.type,
             label: item.attributes.label,
             required: item.validations?.required || false
         };
-        if (item.type === 'dropdown') {
-            // These fields are only used by dropdowns
-            fields[key].multiple =
+        // Parse fields only used by dropdowns.
+        if (item.type === FieldType.DROPDOWN) {
+            parsedTemplate[key].multiple =
                 item.attributes.multiple || false;
-            fields[key].options = item.attributes.options;
+            parsedTemplate[key].options = item.attributes.options;
         }
-        if (item.type === 'checkboxes') {
-            // Checkboxes have a different options format than dropdowns
-            // Enforce false for required if not present
-            fields[key].options = item.attributes.options.map((x) => {
+        // Parse fields only used by checkboxes.
+        if (item.type === FieldType.CHECKBOXES) {
+            // Checkboxes have a different options format than dropdowns.
+            parsedTemplate[key].options = item.attributes.options.map((x) => {
                 return { label: x.label, required: x.required || false };
             });
         }
     }
-    return fields;
+    return parsedTemplate;
 }
 
 /**
@@ -11071,26 +11102,27 @@ async function parseTemplate(templatePath) {
 async function run() {
     // Get the inputs
     const body = coreExports.getInput('body', { required: true });
-    const template = coreExports.getInput('issue-form-template', {
-        required: true
+    const issueFormTemplate = coreExports.getInput('issue-form-template', {
+        required: false
     });
     const workspace = coreExports.getInput('workspace', { required: true });
     coreExports.info('Running action with the following inputs:');
     coreExports.info(`  body: ${body}`);
-    coreExports.info(`  template: ${template}`);
+    coreExports.info(`  issue-form-template: ${issueFormTemplate}`);
     coreExports.info(`  workspace: ${workspace}`);
-    try {
-        // Read and parse the template
-        const parsedTemplate = await parseTemplate(`${workspace}/.github/ISSUE_TEMPLATE/${template}`);
-        // Parse the issue
-        const parsedIssue = await parseIssue(body, parsedTemplate);
-        coreExports.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`);
-        coreExports.setOutput('json', JSON.stringify(parsedIssue));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let parsedIssue;
+    if (issueFormTemplate !== '') {
+        const templatePath = `${workspace}/.github/ISSUE_TEMPLATE/${issueFormTemplate}`;
+        if (!require$$1.existsSync(templatePath))
+            return coreExports.setFailed(`Template not found: ${templatePath}`);
+        parsedIssue = parseIssue(body, require$$1.readFileSync(templatePath, 'utf8'), {
+            slugify: true
+        });
     }
-    catch (error) {
-        return coreExports.setFailed(error.message);
-    }
+    else
+        parsedIssue = parseIssue(body, undefined, { slugify: true });
+    coreExports.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`);
+    coreExports.setOutput('json', JSON.stringify(parsedIssue));
 }
 
 /* istanbul ignore next */

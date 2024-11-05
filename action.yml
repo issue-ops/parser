@@ -13,8 +13,8 @@ inputs:
     required: true
     default: ${{ github.event.issue.body }}
   issue-form-template:
-    description: The issue form template file name (e.g. `new-repository.yml`)
-    required: true
+    description: The issue form template file name (e.g. `new-repository.yml`).
+    required: false
   workspace:
     default: ${{ github.workspace }}
     description:
