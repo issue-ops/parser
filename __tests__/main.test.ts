@@ -2,22 +2,18 @@ import { jest } from '@jest/globals'
 import fs from 'fs'
 import * as core from '../__fixtures__/core.js'
 
-const parseIssueSpy = jest.fn()
-const parseTemplateSpy = jest.fn()
-
 const issue = fs.readFileSync('__fixtures__/example/issue.md', 'utf-8')
-const parsedIssue = JSON.parse(
-  fs.readFileSync('__fixtures__/example/parsed-issue.json', 'utf-8')
+const parsedIssueWithTemplate = JSON.parse(
+  fs.readFileSync(
+    '__fixtures__/example/parsed-issue-with-template.json',
+    'utf-8'
+  )
 )
-const parsedTemplate = JSON.parse(
-  fs.readFileSync('__fixtures__/example/parsed-template.json', 'utf-8')
+const parsedIssueNoTemplate = JSON.parse(
+  fs.readFileSync('__fixtures__/example/parsed-issue-no-template.json', 'utf-8')
 )
 
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/parse.js', () => ({
-  parseIssue: parseIssueSpy,
-  parseTemplate: parseTemplateSpy
-}))
 
 const main = await import('../src/main.js')
 
@@ -25,44 +21,80 @@ describe('main', () => {
   beforeEach(() => {
     core.getInput
       .mockReturnValueOnce(issue)
-      .mockReturnValueOnce('example.yml')
-      .mockReturnValueOnce(process.cwd())
-
-    parseIssueSpy.mockReturnValue(parsedIssue)
-    parseTemplateSpy.mockReturnValue(parsedTemplate)
+      .mockReturnValueOnce('template.yml')
+      .mockReturnValueOnce(`${process.cwd()}/__fixtures__/example`)
   })
 
   afterEach(() => {
     jest.resetAllMocks()
   })
 
-  it('Returns the parsed body', async () => {
+  it('Returns the parsed body (template included)', async () => {
     await main.run()
 
+    // Gets the inputs
     expect(core.getInput).toHaveBeenCalledWith('body', { required: true })
-    expect(core.getInput).toHaveReturnedWith(issue)
     expect(core.getInput).toHaveBeenCalledWith('issue-form-template', {
-      required: true
+      required: false
     })
-    expect(core.getInput).toHaveReturnedWith('example.yml')
     expect(core.getInput).toHaveBeenCalledWith('workspace', { required: true })
-    expect(core.getInput).toHaveReturnedWith(process.cwd())
 
+    // Sets the outputs
     expect(core.setOutput).toHaveBeenCalledWith(
       'json',
-      JSON.stringify(parsedIssue)
+      JSON.stringify(parsedIssueWithTemplate)
     )
+
+    // Does not fail
+    expect(core.setFailed).not.toHaveBeenCalled()
   })
 
-  it('Fails if a template is missing', async () => {
-    parseTemplateSpy.mockImplementation(() => {
-      throw new Error('Template not found: example.yml')
-    })
+  it('Returns the parsed body (no template)', async () => {
+    core.getInput
+      .mockReset()
+      .mockReturnValueOnce(issue)
+      .mockReturnValueOnce('')
+      .mockReturnValueOnce(`${process.cwd()}/__fixtures__/example`)
 
     await main.run()
 
-    expect(core.setFailed).toHaveBeenCalledWith(
-      'Template not found: example.yml'
+    // Gets the inputs
+    expect(core.getInput).toHaveBeenCalledWith('body', { required: true })
+    expect(core.getInput).toHaveBeenCalledWith('issue-form-template', {
+      required: false
+    })
+    expect(core.getInput).toHaveBeenCalledWith('workspace', { required: true })
+
+    // Sets the outputs
+    expect(core.setOutput).toHaveBeenCalledWith(
+      'json',
+      JSON.stringify(parsedIssueNoTemplate)
     )
+
+    // Does not fail
+    expect(core.setFailed).not.toHaveBeenCalled()
+  })
+
+  it('Fails if template does not exist', async () => {
+    core.getInput
+      .mockReset()
+      .mockReturnValueOnce(issue)
+      .mockReturnValueOnce('does-not-exist.yml')
+      .mockReturnValueOnce(`${process.cwd()}/__fixtures__/example`)
+
+    await main.run()
+
+    // Gets the inputs
+    expect(core.getInput).toHaveBeenCalledWith('body', { required: true })
+    expect(core.getInput).toHaveBeenCalledWith('issue-form-template', {
+      required: false
+    })
+    expect(core.getInput).toHaveBeenCalledWith('workspace', { required: true })
+
+    // Fails
+    expect(core.setFailed).toHaveBeenCalled()
+
+    // Does not set an output
+    expect(core.setOutput).not.toHaveBeenCalled()
   })
 })

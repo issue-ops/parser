@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
-import { FormattedField } from './interfaces.js'
-import { parseIssue, parseTemplate } from './parse.js'
+import { parseIssue } from '@github/issue-parser'
+import fs from 'fs'
 
 /**
  * The entrypoint for the action
@@ -8,28 +8,29 @@ import { parseIssue, parseTemplate } from './parse.js'
 export async function run(): Promise<void> {
   // Get the inputs
   const body: string = core.getInput('body', { required: true })
-  const template: string = core.getInput('issue-form-template', {
-    required: true
+  const issueFormTemplate: string = core.getInput('issue-form-template', {
+    required: false
   })
   const workspace: string = core.getInput('workspace', { required: true })
 
   core.info('Running action with the following inputs:')
   core.info(`  body: ${body}`)
-  core.info(`  template: ${template}`)
+  core.info(`  issue-form-template: ${issueFormTemplate}`)
   core.info(`  workspace: ${workspace}`)
 
-  try {
-    // Read and parse the template
-    const parsedTemplate: { [key: string]: FormattedField } =
-      await parseTemplate(`${workspace}/.github/ISSUE_TEMPLATE/${template}`)
+  let parsedIssue
 
-    // Parse the issue
-    const parsedIssue = await parseIssue(body, parsedTemplate)
+  if (issueFormTemplate !== '') {
+    const templatePath = `${workspace}/.github/ISSUE_TEMPLATE/${issueFormTemplate}`
 
-    core.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`)
-    core.setOutput('json', JSON.stringify(parsedIssue))
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    return core.setFailed(error.message)
-  }
+    if (!fs.existsSync(templatePath))
+      return core.setFailed(`Template not found: ${templatePath}`)
+
+    parsedIssue = parseIssue(body, fs.readFileSync(templatePath, 'utf8'), {
+      slugify: true
+    })
+  } else parsedIssue = parseIssue(body, undefined, { slugify: true })
+
+  core.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`)
+  core.setOutput('json', JSON.stringify(parsedIssue))
 }

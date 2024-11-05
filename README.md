@@ -60,8 +60,9 @@ steps:
 
 ## Example
 
-Given an [example issue template](./__fixtures__/example/template.yml) and the
-following issue submitted with that template:
+Given an
+[example issue template](./__fixtures__/example/.github/ISSUE_TEMPLATE/template.yml)
+and the following issue submitted with that template:
 
 ```markdown
 ### The Name of the Thing
@@ -134,24 +135,52 @@ The output of this action would be:
 
 ```json
 {
-  "the_name_of_the_thing": "this-thing",
-  "the_nickname_of_the_thing": "thing",
-  "the_color_of_the_thing": ["blue"],
-  "the_shape_of_the_thing": ["square"],
-  "the_sounds_of_the_thing": ["re", "mi"],
-  "the_topics_about_the_thing": [],
-  "the_description_of_the_thing": "This is a description.\n\nIt has lines.",
-  "the_notes_about_the_thing": "- Note\n- Another note\n- Lots of notes",
-  "the_code_of_the_thing": "const thing = new Thing()\n\nthing.doThing()",
-  "the_string_method_of_the_code_of_the_thing": "thing.toString()",
-  "is_the_thing_a_thing": {
+  "name": "this-thing",
+  "nickname": "thing",
+  "color": ["blue"],
+  "shape": ["square"],
+  "sounds": ["re", "mi"],
+  "topics": [],
+  "description": "This is a description.\n\nIt has multiple lines.\n\nIt's pretty cool!",
+  "notes": "- Note\n- Another note\n- Lots of notes",
+  "code": "const thing = new Thing()\nthing.doThing()",
+  "code-string": "thing.toString()",
+  "is-thing": {
     "selected": ["Yes"],
     "unselected": ["No"]
   },
-  "is_the_thing_useful": {
+  "is-thing-useful": {
     "selected": ["Sometimes"],
     "unselected": ["Yes", "No"]
   },
+  "read-team": "IssueOps-Demo-Readers",
+  "write-team": "IssueOps-Demo-Writers"
+}
+```
+
+### No Template Provided
+
+The `issue-form-template` input is optional. If not provided, the action will
+still parse the issue body, however the output will be a flat JSON object. The
+object keys will be slugified versions of the headers, and the values will be
+the contents of the headers.
+
+Using the same example as above, the output would instead be:
+
+```json
+{
+  "the_name_of_the_thing": "this-thing",
+  "the_nickname_of_the_thing": "thing",
+  "the_color_of_the_thing": "blue",
+  "the_shape_of_the_thing": "square",
+  "the_sounds_of_the_thing": "re, mi",
+  "the_topics_about_the_thing": "_No response_",
+  "the_description_of_the_thing": "This is a description.\n\nIt has multiple lines.\n\nIt's pretty cool!",
+  "the_notes_about_the_thing": "- Note\n- Another note\n- Lots of notes",
+  "the_code_of_the_thing": "const thing = new Thing()\nthing.doThing()",
+  "the_string_method_of_the_code_of_the_thing": "thing.toString()",
+  "is_the_thing_a_thing": "- [x] Yes\n- [ ] No",
+  "is_the_thing_useful": "- [ ] Yes\n- [x] Sometimes\n- [ ] No",
   "read_team": "IssueOps-Demo-Readers",
   "write_team": "IssueOps-Demo-Writers"
 }
