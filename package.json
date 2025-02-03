@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "@github/issue-parser": "^1.0.0",
+    "@github/issue-parser": "^1.0.1",
     "dedent-js": "^1.0.1",
     "yaml": "^2.7.0"
   },
