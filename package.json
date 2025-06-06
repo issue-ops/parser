@@ -43,7 +43,7 @@
     "@actions/core": "^1.11.1",
     "@github/issue-parser": "^2.0.0",
     "dedent-js": "^1.0.1",
-    "yaml": "^2.7.1"
+    "yaml": "^2.8.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.9",
