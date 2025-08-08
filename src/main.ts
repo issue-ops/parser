@@ -33,4 +33,19 @@ export async function run(): Promise<void> {
 
   core.info(`Parsed issue: ${JSON.stringify(parsedIssue, null, 2)}`)
   core.setOutput('json', JSON.stringify(parsedIssue))
+
+  for (const [key, value] of Object.entries(parsedIssue)) {
+    core.setOutput(
+      `parsed_${key}`,
+      value === undefined
+        ? /* istanbul ignore next */
+          // Output an empty string
+          ''
+        : typeof value === 'string'
+          ? // If the value is a string, output it as is
+            value
+          : // Otherwise, stringify the object
+            JSON.stringify(value)
+    )
+  }
 }

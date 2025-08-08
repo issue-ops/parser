@@ -45,6 +45,12 @@ describe('main', () => {
       JSON.stringify(parsedIssueWithTemplate)
     )
 
+    for (const [key, value] of Object.entries(parsedIssueWithTemplate))
+      expect(core.setOutput).toHaveBeenCalledWith(
+        `parsed_${key}`,
+        typeof value === 'string' ? value : JSON.stringify(value)
+      )
+
     // Does not fail
     expect(core.setFailed).not.toHaveBeenCalled()
   })
@@ -70,6 +76,9 @@ describe('main', () => {
       'json',
       JSON.stringify(parsedIssueNoTemplate)
     )
+
+    for (const [key, value] of Object.entries(parsedIssueNoTemplate))
+      expect(core.setOutput).toHaveBeenCalledWith(`parsed_${key}`, value)
 
     // Does not fail
     expect(core.setFailed).not.toHaveBeenCalled()

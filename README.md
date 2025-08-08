@@ -7,7 +7,7 @@
 ![Continuous Delivery](https://github.com/issue-ops/parser/actions/workflows/continuous-delivery.yml/badge.svg)
 ![Linter](https://github.com/issue-ops/parser/actions/workflows/linter.yml/badge.svg)
 
-Convert issue form responses to JSON
+Convert issue form responses to JSON!
 
 ## About
 
@@ -54,9 +54,10 @@ steps:
 
 ## Outputs
 
-| Output | Description                       |
-| ------ | --------------------------------- |
-| `json` | The parsed issue as a JSON string |
+| Output         | Description                       |
+| -------------- | --------------------------------- |
+| `json`         | The parsed issue as a JSON string |
+| `parsed_<key>` | The parsed value for `<key>`      |
 
 ## Example
 
@@ -131,9 +132,7 @@ IssueOps-Demo-Readers
 IssueOps-Demo-Writers-NotATeam
 ```
 
-The output of this action would be:
-
-<!-- markdownlint-disable -->
+The `json` output of this action would be:
 
 ```json
 {
@@ -160,7 +159,24 @@ The output of this action would be:
 }
 ```
 
-<!-- markdownlint-enable -->
+Additionally, the following outputs would be available:
+
+| Output                   | Value                                                                   |
+| ------------------------ | ----------------------------------------------------------------------- |
+| `parsed_name`            | `this-thing`                                                            |
+| `parsed_nickname`        | `thing`                                                                 |
+| `parsed_color`           | `["blue"]`                                                              |
+| `parsed_shape`           | `["square"]`                                                            |
+| `parsed_sounds`          | `["re", "mi"]`                                                          |
+| `parsed_topics`          | `[]`                                                                    |
+| `parsed_description`     | `This is a description.\n\nIt has multiple lines.\n\nIt's pretty cool!` |
+| `parsed_notes`           | `- Note\n- Another note\n- Lots of notes`                               |
+| `parsed_code`            | `const thing = new Thing()\nthing.doThing()`                            |
+| `parsed_code-string`     | `thing.toString()`                                                      |
+| `parsed_is-thing`        | `{ "selected": ["Yes"], "unselected": ["No"] }`                         |
+| `parsed_is-thing-useful` | `{ "selected": ["Sometimes"], "unselected": ["Yes", "No"] }`            |
+| `parsed_read-team`       | `IssueOps-Demo-Readers`                                                 |
+| `parsed_write-team`      | `IssueOps-Demo-Writers`                                                 |
 
 ### No Template Provided
 
@@ -169,9 +185,7 @@ still parse the issue body, however the output will be a flat JSON object. The
 object keys will be slugified versions of the headers, and the values will be
 the contents of the headers.
 
-Using the same example as above, the output would instead be:
-
-<!-- markdownlint-disable -->
+Using the same example as above, the `json` output would instead be:
 
 ```json
 {
@@ -192,7 +206,24 @@ Using the same example as above, the output would instead be:
 }
 ```
 
-<!-- markdownlint-enable -->
+Additionally, the following outputs would be available:
+
+| Output                                              | Value                                                                   |
+| --------------------------------------------------- | ----------------------------------------------------------------------- |
+| `parsed_the_name_of_the_thing`                      | `this-thing`                                                            |
+| `parsed_the_nickname_of_the_thing`                  | `thing`                                                                 |
+| `parsed_the_color_of_the_thing`                     | `["blue"]`                                                              |
+| `parsed_the_shape_of_the_thing`                     | `["square"]`                                                            |
+| `parsed_the_sounds_of_the_thing`                    | `["re", "mi"]`                                                          |
+| `parsed_the_topics_about_the_thing`                 | `[]`                                                                    |
+| `parsed_the_description_of_the_thing`               | `This is a description.\n\nIt has multiple lines.\n\nIt's pretty cool!` |
+| `parsed_the_notes_about_the_thing`                  | `- Note\n- Another note\n- Lots of notes`                               |
+| `parsed_the_code_of_the_thing`                      | `const thing = new Thing()\nthing.doThing()`                            |
+| `parsed_the_string_method_of_the_code_of_the_thing` | `thing.toString()`                                                      |
+| `parsed_is_the_thing_a_thing`                       | `{ "selected": ["Yes"], "unselected": ["No"] }`                         |
+| `parsed_is_the_thing_useful`                        | `{ "selected": ["Sometimes"], "unselected": ["Yes", "No"] }`            |
+| `parsed_read_team`                                  | `IssueOps-Demo-Readers`                                                 |
+| `parsed_write_team`                                 | `IssueOps-Demo-Writers`                                                 |
 
 ## Transformations
 
@@ -218,6 +249,12 @@ The following transformations will take place for responses, depending on the
 input type. The type is inferred from the issue form template. For information
 on each specific type, see
 [Syntax for GitHub's form schema](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/syntax-for-githubs-form-schema).
+
+> [!NOTE]
+>
+> If the issue form template is not provided, the action will assume all inputs
+> are of type `input`. This means that all values will be treated as strings (no
+> transformations will be applied).
 
 #### Single Line
 
