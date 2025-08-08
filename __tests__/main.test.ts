@@ -48,7 +48,11 @@ describe('main', () => {
     for (const [key, value] of Object.entries(parsedIssueWithTemplate))
       expect(core.setOutput).toHaveBeenCalledWith(
         `parsed_${key}`,
-        value === undefined ? '' : (typeof value === 'string' ? value : JSON.stringify(value))
+        value === undefined
+          ? ''
+          : typeof value === 'string'
+            ? value
+            : JSON.stringify(value)
       )
 
     // Does not fail
