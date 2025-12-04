@@ -1,7 +1,7 @@
 {
   "name": "parser",
   "description": "Convert issue form responses to JSON",
-  "version": "4.2.0",
+  "version": "5.0.0",
   "author": "Nick Alteen <ncalteen@github.com>",
   "type": "module",
   "homepage": "https://github.com/issue-ops/parser#readme",
@@ -54,7 +54,7 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.1",
     "@typescript-eslint/eslint-plugin": "^8.48.0",
-    "@typescript-eslint/parser": "^8.31.1",
+    "@typescript-eslint/parser": "^8.48.0",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
